@@ -13,10 +13,7 @@ class CarsListViewController: UICollectionViewController {
     private let carListCellIdentifier = "carsListCell"
     private let carListXibIdentifier = "CarsListCollectionViewCell"
  
-    lazy var viewModel : CarsListViewModel = {
-        let viewModel = CarsListViewModel()
-        return viewModel
-    }()
+    private let viewModel: CarsListViewModel = CarsListViewModel()
 
     override func viewDidLoad() {
         
@@ -41,8 +38,8 @@ class CarsListViewController: UICollectionViewController {
     
     func initNavigationBar() {
         
-        navigationController?.navigationBar.tintColor = Colors.themeColor
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : Colors.themeColor]
+        navigationController?.navigationBar.tintColor = Helper.shared.themeColor
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : Helper.shared.themeColor]
     }
     
     //MARK: - Collection View Setup
@@ -106,6 +103,17 @@ extension CarsListViewController {
         cell.configure(with: viewModel.carList[indexPath.row])
         
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "carDetails") as? CarDetailsViewController {
+            
+            vc.carDetailsUrl = viewModel.carList[indexPath.row].detailsUrl
+            vc.carName = viewModel.carList[indexPath.row].title
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
 }

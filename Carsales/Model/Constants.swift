@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import UIKit
 
 enum Config {
     
@@ -23,10 +22,4 @@ enum Config {
     static let potraitColumnsIpad = 2
     static let landscapeColumnsIpad = 3
     static let landscapeColumnsIphone = 2
-}
-
-enum Colors {
-
-    static let themeColor = UIColor(red: 22/255, green: 123/255, blue: 201/255, alpha: 1.0) //blue
-
 }

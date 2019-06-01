@@ -42,7 +42,7 @@ class CarsListCollectionViewCell: UICollectionViewCell {
         priceLabel.text = carModel.price
         locationLabel.text = carModel.location
         
-        priceLabel.textColor = Colors.themeColor
+        priceLabel.textColor = Helper.shared.themeColor
     }
     
     func resetImage() {

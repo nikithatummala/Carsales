@@ -16,7 +16,12 @@ class ImageHandler {
     let fileManager = FileManager.default
     let directoryPath : String
     
-    init(_ folderName : String) {
+    lazy var imageCache = AutoPurgingImageCache(
+        memoryCapacity: UInt64(100).megabytes(),
+        preferredMemoryUsageAfterPurge: UInt64(60).megabytes()
+    )
+    
+    init(_ folderName : String = "") {
         
         directoryPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(folderName)
         configureDirectory()
@@ -75,4 +80,32 @@ class ImageHandler {
         try? image.pngData()?.write(to: imageUrl)
     }
     
+    //MARK: = Image Caching
+    
+    func cache(_ image: Image, for url: String) {
+        imageCache.add(image, withIdentifier: url)
+    }
+    
+    func cachedImage(for url: String) -> Image? {
+        return imageCache.image(withIdentifier: url)
+    }
+    
+    func retrieveImage(for url: String, completion: @escaping (UIImage) -> Void) -> Request {
+        
+        return Alamofire.request(url, method: .get).responseImage { response in
+            guard let image = response.result.value else {
+                return
+            }
+            completion(image)
+            self.cache(image, for: url)
+        }
+    }
+    
+}
+
+extension UInt64 {
+    
+    func megabytes() -> UInt64 {
+        return self * 1024 * 1024
+    }
 }

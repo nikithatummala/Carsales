@@ -11,10 +11,6 @@ import UIKit
 
 class CarsListViewModel {
     
-    lazy var apiRequest: APIHandler = {
-        return APIHandler()
-    }()
-    
     var carList : [CarsList] = [CarsList]()
     
     var numberOfItems: Int {
@@ -24,12 +20,13 @@ class CarsListViewModel {
     /**
      Fetch data from the server url and saves the response Result
      **/
-    func loadData(_ url: String, completion: @escaping () -> Void) {
+    func loadData(_ url: String, apiHandler: APIHandler = APIHandler(), completion: @escaping () -> Void) {
         
-        apiRequest.fetchApiData(urlString: url) { [weak self] (data:Result?, error: ErrorModel?) in
+        apiHandler.fetchApiData(urlString: url) { [weak self] (data:Result?, error: ErrorModel?) in
             
             if let error = error {
                 print(error)
+                return
             }
             guard let data = data else {
                 print("EROOR near guard .. returnnn")
@@ -52,7 +49,7 @@ class CarsListViewModel {
         
         var count = 1
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if Helper.shared.isIpad == true {
             count = Config.potraitColumnsIpad
             if UIApplication.shared.statusBarOrientation == .landscapeLeft ||
                 UIApplication.shared.statusBarOrientation == .landscapeRight {
@@ -82,6 +79,7 @@ class CarsListViewModel {
         if let collectionView = collectionView {
             let width = (collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow
             return CGSize(width: width, height: ((width*2)/3) + 60)
+            //return CGSize(width: width, height: UICollectionView.)
         } else {
             return CGSize(width: 0, height: 0)
         }
