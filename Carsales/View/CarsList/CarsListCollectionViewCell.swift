@@ -60,7 +60,7 @@ class CarsListCollectionViewCell: UICollectionViewCell {
     func resetImage(collectionview: UICollectionView) {
         carImage.image = nil
         let size = Helper.shared.getSizeForItems(collectionview)
-        carImageHeightConstraint.constant = size.height - CGFloat(Config.collectionViewCellSpacing)
+        carImageHeightConstraint.constant = size.height - CGFloat(Constants.collectionViewCellSpacing)
     }
     
     func loadImage() {

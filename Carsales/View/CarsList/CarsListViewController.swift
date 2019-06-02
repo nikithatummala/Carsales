@@ -10,6 +10,8 @@ import UIKit
 
 class CarsListViewController: UICollectionViewController {
     
+    private var errorLabel : UILabel!
+
     private let carListCellIdentifier = "carsListCell"
     private let carListXibIdentifier = "CarsListCollectionViewCell"
  
@@ -21,7 +23,6 @@ class CarsListViewController: UICollectionViewController {
         
         initNavigationBar()
         registerCollectionViewCells()
-        loadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -29,21 +30,66 @@ class CarsListViewController: UICollectionViewController {
         super.viewWillAppear(animated)
         
         navigationItem.title = Config.appTitle
-        if Helper.shared.isNetworkActive == false && viewModel.numberOfItems == 0 {
-            Helper.shared.showErrorLabel(view, text: Config.internetErrorMsg)
-        }
+        
+        addObservers()
+        configureNetworkErrorLabel()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         
         super.viewWillDisappear(animated)
         navigationItem.title = ""
+        removeObservers()
     }
     
     func initNavigationBar() {
         
         navigationController?.navigationBar.tintColor = Helper.shared.themeColor
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : Helper.shared.themeColor, NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 20)]
+    }
+    
+    //MARK: - Observers Setup
+
+    func addObservers() {
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(networkStatusChanged(_:)),
+                                               name: .didNetworkStatusChange,
+                                               object: nil)
+    }
+    
+    func removeObservers() {
+        
+        NotificationCenter.default.removeObserver(self, name: .didNetworkStatusChange, object: nil)
+    }
+    
+    //MARK: - Network change handling
+    
+    func configureNetworkErrorLabel() {
+        
+        errorLabel = view.viewWithTag(1) as? UILabel
+        errorLabel.textColor = Helper.shared.themeColor
+        errorLabel.text = Config.internetErrorMsg
+        checkNetworkStatusAndShowData()
+    }
+    
+    @objc func networkStatusChanged(_ notification: Notification) {
+        checkNetworkStatusAndShowData()
+    }
+    
+    /** Checks if active network connection exists and shows error text if no internet. Loads data if proper internet connection exists
+     **/
+    func checkNetworkStatusAndShowData() {
+    
+        if Helper.shared.isNetworkActive == false  {
+            errorLabel.isHidden = false
+            viewModel.carList.removeAll()
+            collectionView.reloadData()
+        }
+        else {
+            errorLabel.isHidden = true
+            loadData()
+        }
     }
     
     //MARK: - Collection View Setup

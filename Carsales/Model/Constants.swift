@@ -20,6 +20,9 @@ enum Config {
     static let imageFolderName = "carsalesImages"
     
     static let internetErrorMsg = "Something wrong..\n Please use wifi or turn on the mobile data to continue!!"
+}
+
+enum Constants {
     
     static let potraitColumnsIpad = 2
     static let landscapeColumnsIpad = 3

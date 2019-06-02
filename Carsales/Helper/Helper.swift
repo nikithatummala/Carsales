@@ -30,14 +30,18 @@ class Helper {
     }
     
     /**
-     Starts network checking to check internet status if it is active or not, and updates the isNetworkActive flag accordingly
+     Starts network checking to check internet status if it is active or not, updates the isNetworkActive flag accordingly and posts notification when active network connection is detected
      **/
     func startNetworkCheck() {
         
         monitor.pathUpdateHandler = { path in
             
             if path.status == .satisfied {
+                
                 self.isNetworkActive = true
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .didNetworkStatusChange, object: nil, userInfo: ["status": self.isNetworkActive])
+                }
             } else {
                 self.isNetworkActive = false
             }
@@ -45,24 +49,6 @@ class Helper {
         
         let queue = DispatchQueue(label: "Monitor")
         monitor.start(queue: queue)
-    }
-    
-    /**
-     Displays a label with given text in the center of the given view
-     **/
-    func showErrorLabel(_ view: UIView, text: String) {
-        
-        let errorLabel = UILabel(frame: CGRect(x: 0,
-                                               y: 0,
-                                               width: view.frame.size.width - 30,
-                                               height: view.frame.size.height - 50))
-        errorLabel.numberOfLines = 0
-        errorLabel.center = view.center
-        errorLabel.text = text
-        errorLabel.textAlignment = .center
-        errorLabel.textColor = Helper.shared.themeColor
-        
-        view.addSubview(errorLabel)
     }
     
     /**
@@ -78,7 +64,7 @@ class Helper {
         if let collectionView = collectionView {
             
             let width = (collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow
-            return CGSize(width: width, height: ((width*2)/3) +  CGFloat(Config.collectionViewCellSpacing))
+            return CGSize(width: width, height: ((width*2)/3) +  CGFloat(Constants.collectionViewCellSpacing))
         }
         else {
             return CGSize(width: 0, height: 0)
@@ -93,20 +79,25 @@ class Helper {
         var count = 1
         
         if Helper.shared.isIpad == true {
-            count = Config.potraitColumnsIpad
+            count = Constants.potraitColumnsIpad
             if UIApplication.shared.statusBarOrientation == .landscapeLeft ||
                 UIApplication.shared.statusBarOrientation == .landscapeRight {
-                count = Config.landscapeColumnsIpad
+                count = Constants.landscapeColumnsIpad
             }
         }
         else {
             if UIApplication.shared.statusBarOrientation == .landscapeLeft ||
                 UIApplication.shared.statusBarOrientation == .landscapeRight {
-                count = Config.landscapeColumnsIphone
+                count = Constants.landscapeColumnsIphone
             }
         }
         
         return CGFloat(count)
     }
     
+}
+
+extension Notification.Name {
+    
+    static let didNetworkStatusChange = NSNotification.Name("didNetworkStatusChange")
 }

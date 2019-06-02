@@ -12,6 +12,8 @@ class CarDetailsViewController: UIViewController {
     
     @IBOutlet weak var tableview: UITableView!
     
+    private var errorLabel : UILabel!
+    
     // The images url and car name is set when this controller is pushed on to the stack from CarsListViewController
     var carDetailsUrl:String = ""
     var carName = ""
@@ -20,22 +22,22 @@ class CarDetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         tableview.tableFooterView = UIView()
-        loadData()
     }
     
-    /**
-     If there is no internet connection, a message is displayed to the users
-     **/
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
         
         initNavBarTitle()
-        if Helper.shared.isNetworkActive == false && carDetailsViewModel.numberOfRows == 0 {
-            Helper.shared.showErrorLabel(view, text: Config.internetErrorMsg)
-        }
+        addObservers()
+        configureNetworkErrorLabel()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        super.viewWillDisappear(animated)
+        removeObservers()
     }
     
     /**
@@ -52,6 +54,49 @@ class CarDetailsViewController: UIViewController {
         label.text = carName
         self.navigationItem.titleView = label
     }
+    
+    //MARK: - Observers Setup
+    
+    func addObservers() {
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged(_:)), name: .didNetworkStatusChange, object: nil)
+    }
+    
+    func removeObservers() {
+        
+        NotificationCenter.default.removeObserver(self, name: .didNetworkStatusChange, object: nil)
+    }
+    
+    //MARK: - Network change handling
+    
+    func configureNetworkErrorLabel() {
+
+        errorLabel = view.viewWithTag(1) as? UILabel
+        errorLabel.textColor = Helper.shared.themeColor
+        errorLabel.text = Config.internetErrorMsg
+        checkNetworkStatusAndShowData()
+    }
+    
+    @objc func networkStatusChanged(_ notification: Notification) {
+        checkNetworkStatusAndShowData()
+    }
+    
+    /** Checks if active network connection exists and shows error text if no internet. Loads data if proper internet connection exists
+     **/
+    func checkNetworkStatusAndShowData() {
+        
+        if Helper.shared.isNetworkActive == false {
+            tableview.isHidden = true
+            errorLabel.isHidden = false
+        }
+        else {
+            tableview.isHidden = false
+            errorLabel.isHidden = true
+            loadData()
+        }
+    }
+    
+    //MARK: - Device rotation 
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
@@ -139,9 +184,12 @@ extension CarDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     func loadCellWithImages(_ cell: UITableViewCell) {
         
         let images = carDetailsViewModel.images
+        let loadingIndicator = cell.viewWithTag(2) as! UIActivityIndicatorView
         
         if images.count > 0 {
-            
+
+            loadingIndicator.stopAnimating()
+
             let scrollView = cell.viewWithTag(1) as! UIScrollView
             
             scrollView.frame = CGRect(x: 0,
@@ -162,6 +210,9 @@ extension CarDetailsViewController: UITableViewDelegate, UITableViewDataSource {
                                          height: cell.frame.height)
                 scrollView.addSubview(imageView)
             }
+        }
+        else {
+            loadingIndicator.startAnimating()
         }
     }
     

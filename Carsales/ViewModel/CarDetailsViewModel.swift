@@ -12,7 +12,6 @@ import AlamofireImage
 
 class CarDetailsViewModel {
     
-    
     var carDetails:[String] = [String]()
     var carPhotosUrl:[String]?
     
