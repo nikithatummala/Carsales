@@ -27,7 +27,11 @@ class CarsListViewController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
 
         super.viewWillAppear(animated)
+        
         navigationItem.title = Config.appTitle
+        if Helper.shared.isNetworkActive == false && viewModel.numberOfItems == 0 {
+            Helper.shared.showErrorLabel(view, text: Config.internetErrorMsg)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -39,7 +43,7 @@ class CarsListViewController: UICollectionViewController {
     func initNavigationBar() {
         
         navigationController?.navigationBar.tintColor = Helper.shared.themeColor
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : Helper.shared.themeColor]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : Helper.shared.themeColor, NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 20)]
     }
     
     //MARK: - Collection View Setup
@@ -70,11 +74,13 @@ class CarsListViewController: UICollectionViewController {
 
 }
 
+    // MARK: - UICollectionViewDelegateFlowLayout
+
 extension CarsListViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return viewModel.getSizeForItems(self.collectionView)
+        return Helper.shared.getSizeForItems(self.collectionView)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -100,7 +106,7 @@ extension CarsListViewController {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: carListCellIdentifier, for: indexPath) as! CarsListCollectionViewCell
         
-        cell.configure(with: viewModel.carList[indexPath.row])
+        cell.configure(with: viewModel.carList[indexPath.row], collectionview: collectionView)
         
         return cell
     }

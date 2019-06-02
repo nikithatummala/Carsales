@@ -19,7 +19,11 @@ enum Config {
     
     static let imageFolderName = "carsalesImages"
     
+    static let internetErrorMsg = "Something wrong..\n Please use wifi or turn on the mobile data to continue!!"
+    
     static let potraitColumnsIpad = 2
     static let landscapeColumnsIpad = 3
     static let landscapeColumnsIphone = 2
+    
+    static let collectionViewCellSpacing = 85
 }

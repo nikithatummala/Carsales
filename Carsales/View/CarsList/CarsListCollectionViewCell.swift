@@ -18,6 +18,9 @@ class CarsListCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
+    
+    @IBOutlet weak var carImageHeightConstraint: NSLayoutConstraint!
+    
     var carModel : CarsList!
     
     var imageHandler : ImageHandler?
@@ -26,16 +29,22 @@ class CarsListCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
     }
     
-    func configure(with carModel: CarsList) {
+    /**
+     Initializes the car Model and image handler, and calls UI display funcitons
+     **/
+    func configure(with carModel: CarsList, collectionview: UICollectionView) {
         
         self.carModel = carModel
         self.imageHandler = ImageHandler(Config.imageFolderName)
 
         setUI()
-        resetImage()
+        resetImage(collectionview: collectionview)
         loadImage()
     }
     
+    /**
+     Populates labels in the cell with the car Model data
+     **/
     func setUI() {
         
         nameLabel.text = carModel.title
@@ -45,8 +54,13 @@ class CarsListCollectionViewCell: UICollectionViewCell {
         priceLabel.textColor = Helper.shared.themeColor
     }
     
-    func resetImage() {
+    /**
+     Reset image height based on 3:2 ratio of device width
+     **/
+    func resetImage(collectionview: UICollectionView) {
         carImage.image = nil
+        let size = Helper.shared.getSizeForItems(collectionview)
+        carImageHeightConstraint.constant = size.height - CGFloat(Config.collectionViewCellSpacing)
     }
     
     func loadImage() {

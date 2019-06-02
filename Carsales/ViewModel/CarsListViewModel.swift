@@ -17,6 +17,7 @@ class CarsListViewModel {
         return carList.count
     }
 
+    //MARK: - Fetch data from API
     /**
      Fetch data from the server url and saves the response Result
      **/
@@ -29,7 +30,7 @@ class CarsListViewModel {
                 return
             }
             guard let data = data else {
-                print("EROOR near guard .. returnnn")
+                print("Error in getting data")
                 return
             }
             
@@ -41,48 +42,4 @@ class CarsListViewModel {
             
         }
     }
-    
-    /**
-     Returns the number of items in a row for iphone and ipad based on device orientation
-     **/
-    func getNumberOfItemsPerRow() -> CGFloat {
-        
-        var count = 1
-        
-        if Helper.shared.isIpad == true {
-            count = Config.potraitColumnsIpad
-            if UIApplication.shared.statusBarOrientation == .landscapeLeft ||
-                UIApplication.shared.statusBarOrientation == .landscapeRight {
-                count = Config.landscapeColumnsIpad
-            }
-        }
-        else {
-            if UIApplication.shared.statusBarOrientation == .landscapeLeft ||
-                UIApplication.shared.statusBarOrientation == .landscapeRight {
-                count = Config.landscapeColumnsIphone
-            }
-        }
-        
-        return CGFloat(count)
-    }
-    
-    /**
-     Returns the width and height of the cell based on number of items in the row
-     **/
-    func getSizeForItems(_ collectionView: UICollectionView?) -> CGSize {
-        
-        let numberOfItemsPerRow:CGFloat = getNumberOfItemsPerRow()
-        let spacingBetweenCells:CGFloat = 10
-        
-        let totalSpacing = ((numberOfItemsPerRow - 1) * spacingBetweenCells) //Amount of total spacing in a row
-        
-        if let collectionView = collectionView {
-            let width = (collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow
-            return CGSize(width: width, height: ((width*2)/3) + 60)
-            //return CGSize(width: width, height: UICollectionView.)
-        } else {
-            return CGSize(width: 0, height: 0)
-        }
-    }
-    
 }

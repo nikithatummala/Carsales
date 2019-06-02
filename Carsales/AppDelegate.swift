@@ -13,13 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
        
         /** Delete existing images when is launched as images are freshly downloaded **/
         let imageHandler = ImageHandler(Config.imageFolderName)
         imageHandler.deleteImages()
+        
+        /* Starts network checking to know if internet is active or not*/
+        Helper.shared.startNetworkCheck()
         
         return true
     }
