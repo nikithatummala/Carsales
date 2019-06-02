@@ -16,9 +16,9 @@ struct DetailsResult : Codable {
 struct Details : Codable {
     
     let carID : String
-    let saleStatus : String
+    let saleStatus : String?
     let overview : Overview
-    let comments : String
+    let comments : String?
     
     private enum CodingKeys: String, CodingKey {
         case carID = "Id"
@@ -30,9 +30,9 @@ struct Details : Codable {
 
 struct Overview :Codable {
     
-    let location : String
-    let price : String
-    let photos : [String]
+    let location : String?
+    let price : String?
+    let photos : [String]?
     
     private enum CodingKeys: String, CodingKey {
         case location = "Location"

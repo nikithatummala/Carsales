@@ -75,11 +75,11 @@ class CarDetailsViewModel {
             
             let obj = result[0]
             
-            self?.carDetails.append(obj.overview.photos[0])
-            self?.carDetails.append(obj.overview.location)
-            self?.carDetails.append(obj.overview.price)
-            self?.carDetails.append(obj.saleStatus)
-            self?.carDetails.append(obj.comments)
+            self?.carDetails.append(obj.overview.photos?[0] ?? "")
+            self?.carDetails.append(obj.overview.location ?? "N/A")
+            self?.carDetails.append(obj.overview.price ?? "N/A")
+            self?.carDetails.append(obj.saleStatus ?? "-")
+            self?.carDetails.append(obj.comments ?? "")
             
             self?.carPhotosUrl = obj.overview.photos
             completion()
